@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "00.pHatSerial", "pHatSerial\00.pHatSerial.csproj", "{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "00.pHatSerial", "pHatSerial\00.pHatSerial.csproj", "{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkJoinOTAA", "NetworkJoinOTAA\NetworkJoinOTAA.csproj", "{32331C6D-1F55-4033-9ECE-D546521A15B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "01.NetworkJoinOTAA", "NetworkJoinOTAA\01.NetworkJoinOTAA.csproj", "{32331C6D-1F55-4033-9ECE-D546521A15B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAK811LoRaWANDevice", "RAK811LoRaWANDevice\RAK811LoRaWANDevice.csproj", "{0DAF4B29-854C-416C-A2C9-25F528E7680E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAK811LoRaWANDeviceClient", "RAK811LoRaWANDeviceClient\RAK811LoRaWANDeviceClient.csproj", "{D711F80D-C8BD-4E1F-B5CB-75A076817901}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DAF4B29-854C-416C-A2C9-25F528E7680E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DAF4B29-854C-416C-A2C9-25F528E7680E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DAF4B29-854C-416C-A2C9-25F528E7680E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DAF4B29-854C-416C-A2C9-25F528E7680E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D711F80D-C8BD-4E1F-B5CB-75A076817901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D711F80D-C8BD-4E1F-B5CB-75A076817901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D711F80D-C8BD-4E1F-B5CB-75A076817901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D711F80D-C8BD-4E1F-B5CB-75A076817901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
