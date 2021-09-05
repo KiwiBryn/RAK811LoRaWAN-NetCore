@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "00.pHatSerial", "pHatSerial\00.pHatSerial.csproj", "{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkJoinOTAA", "NetworkJoinOTAA\NetworkJoinOTAA.csproj", "{32331C6D-1F55-4033-9ECE-D546521A15B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F12AF58A-1CEC-4E6A-80FE-03CEF6560D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32331C6D-1F55-4033-9ECE-D546521A15B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C255EB2B-CF55-427D-9F1D-5BF10CDE334B}
+	EndGlobalSection
+EndGlobal
