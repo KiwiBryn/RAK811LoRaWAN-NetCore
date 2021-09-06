@@ -464,6 +464,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
       {
          Result result;
 
+#if AS923_HACK
          result = SendCommand("OK", "at+set_config=lora:ch_mask:2:0", CommandTimeoutDefault);
          if (result != Result.Success)
          {
@@ -517,6 +518,8 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 #endif
             return result;
          }
+#endif
+
          // Join the network
 #if DIAGNOSTICS
          Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} join");
@@ -530,6 +533,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
             return result;
          }
 
+#if AS923_HACK
          result = SendCommand("OK", "at+set_config=lora:ch_mask:2:1", CommandTimeoutDefault);
          if (result != Result.Success)
          {
@@ -583,6 +587,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 #endif
             return result;
          }
+#endif
 
          return Result.Success;
       }
