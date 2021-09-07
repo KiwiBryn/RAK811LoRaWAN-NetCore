@@ -28,7 +28,7 @@ namespace devMobile.IoT.NetCore.Rak811.pHatSerial
 
 		public static void Main()
 		{
-			SerialPort serialDevice;
+			SerialPort serialPort;
 
 			Debug.WriteLine("devMobile.IoT.NetCore.Rak811.pHatSerial starting");
 
@@ -36,40 +36,42 @@ namespace devMobile.IoT.NetCore.Rak811.pHatSerial
 
 			try
 			{
-				serialDevice = new SerialPort(SerialPortId);
+				serialPort = new SerialPort(SerialPortId);
 
 				// set parameters
 #if DEFAULT_BAUDRATE
 				serialDevice.BaudRate = 115200;
 #else
-            serialDevice.BaudRate = 9600;
+            serialPort.BaudRate = 9600;
 #endif
-				serialDevice.Parity = Parity.None;
-				serialDevice.DataBits = 8;
-				serialDevice.StopBits = StopBits.One;
-				serialDevice.Handshake = Handshake.None;
+				serialPort.Parity = Parity.None;
+				serialPort.DataBits = 8;
+				serialPort.StopBits = StopBits.One;
+				serialPort.Handshake = Handshake.None;
 
-				serialDevice.Open();
+				serialPort.ReadTimeout = 1000;
+
+				serialPort.NewLine = "\r\n";
+
+				serialPort.Open();
 
 #if DEFAULT_BAUDRATE
 				Debug.WriteLine("RAK811 baud rate set to 9600");
-				serialDevice.Write("at+set_config=device:uart:1:9600\r\n");
+				serialDevice.Write("at+set_config=device:uart:1:9600");
 #endif
 
 #if SERIAL_ASYNC_READ
-				serialDevice.DataReceived += SerialDevice_DataReceived;
+				serialPort.DataReceived += SerialDevice_DataReceived;
 #endif
 
 				while (true)
 				{
-					serialDevice.Write("at+version\r\n");
+					serialPort.WriteLine("at+version");
 
 #if SERIAL_SYNC_READ
-               Thread.Sleep(250);
+					string response = serialPort.ReadLine();
 
-					string response = serialDevice.ReadLine();
-
-					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length} read from {serialDevice.PortName}");
+					Debug.WriteLine($"RX:{response.Trim()} bytes:{response.Length}");
 #endif
 
 					Thread.Sleep(20000);
@@ -84,14 +86,14 @@ namespace devMobile.IoT.NetCore.Rak811.pHatSerial
 #if SERIAL_ASYNC_READ
 		private static void SerialDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
 		{
-			SerialPort serialDevice = (SerialPort)sender;
+			SerialPort serialPort = (SerialPort)sender;
 
 			switch (e.EventType)
 			{
 				case SerialData.Chars:
-					string response = serialDevice.ReadExisting();
+					string response = serialPort.ReadExisting();
 
-					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length} read from {serialDevice.PortName}");
+					Debug.WriteLine($"RX:{response.Trim()} bytes:{response.Length}");
 					break;
 
 				case SerialData.Eof:
