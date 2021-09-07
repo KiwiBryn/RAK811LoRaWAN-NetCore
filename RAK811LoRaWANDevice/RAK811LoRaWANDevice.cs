@@ -75,7 +75,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
       LoRaMicVerifyError,
    }
 
-   public class Rak811LoRaWanDevice : IDisposable
+   public sealed class Rak811LoRaWanDevice : IDisposable
    {
       public const ushort BaudRateMinimum = 600;
       public const ushort BaudRateMaximum = 57600;
@@ -127,11 +127,11 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
          Result result;
          if ((serialPortId == null) || (serialPortId == ""))
          {
-            throw new ArgumentException("Invalid SerialPortId", "serialPortId");
+            throw new ArgumentException("Invalid SerialPortId", nameof(serialPortId));
          }
          if ((baudRate < BaudRateMinimum) || (baudRate > BaudRateMaximum))
          {
-            throw new ArgumentException("Invalid BaudRate", "baudRate");
+            throw new ArgumentException("Invalid BaudRate", nameof(baudRate));
          }
 
          serialDevice = new SerialPort(serialPortId);
@@ -142,6 +142,8 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
          serialDevice.DataBits = dataBits;
          serialDevice.StopBits = stopBits;
          serialDevice.Handshake = Handshake.None;
+
+         serialDevice.NewLine = "\r\n";
 
          serialDevice.Open();
 
@@ -182,7 +184,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
                command = "at+set_config=lora:class:2";
                break;
             default:
-               throw new ArgumentException($"LoRa class value {loRaClass} invalid", "loRaClass");
+               throw new ArgumentException($"LoRa class value {loRaClass} invalid", nameof(loRaClass));
          }
 
          // Set the class
@@ -220,7 +222,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
                command = "at+set_config=lora:confirm:3";
                break;
             default:
-               throw new ArgumentException($"LoRa confirm type value {loRaConfirmType} invalid", "loRaConfirmType");
+               throw new ArgumentException($"LoRa confirm type value {loRaConfirmType} invalid", nameof(loRaConfirmType));
          }
 
          // Set the confirmation type
@@ -243,7 +245,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
       {
          if (regionID.Length != RegionIDLength)
          {
-            throw new ArgumentException($"RegionID {regionID} length {regionID.Length} invalid", "regionID");
+            throw new ArgumentException($"RegionID {regionID} length {regionID.Length} invalid", nameof(regionID));
          }
 
 #if DIAGNOSTICS
@@ -339,15 +341,15 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 
          if ((devAddr == null) || (devAddr.Length != DevAddrLength))
          {
-            throw new ArgumentException($"devAddr invalid length must be {DevAddrLength} characters", "devAddr");
+            throw new ArgumentException($"devAddr invalid length must be {DevAddrLength} characters", nameof(devAddr));
          }
          if ((nwksKey == null) || (nwksKey.Length != NwsKeyLength))
          {
-            throw new ArgumentException($"nwsKey invalid length must be {NwsKeyLength} characters", "nwsKey");
+            throw new ArgumentException($"nwsKey invalid length must be {NwsKeyLength} characters", nameof(nwksKey));
          }
          if ((appsKey == null) || (appsKey.Length != AppsKeyLength))
          {
-            throw new ArgumentException($"appsKey invalid length must be {AppsKeyLength} characters", "appsKey");
+            throw new ArgumentException($"appsKey invalid length must be {AppsKeyLength} characters", nameof(appsKey));
          }
 
          // Set the JoinMode to ABP
@@ -411,11 +413,11 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 
          if ((appEui == null) || (appEui.Length != AppEuiLength))
          {
-            throw new ArgumentException($"appEui invalid length must be {AppEuiLength} characters", "appEui");
+            throw new ArgumentException($"appEui invalid length must be {AppEuiLength} characters", nameof(appEui));
          }
          if ((appKey == null) || (appKey.Length != AppKeyLength))
          {
-            throw new ArgumentException($"appKey invalid length must be {AppKeyLength} characters", "appKey");
+            throw new ArgumentException($"appKey invalid length must be {AppKeyLength} characters", nameof(appKey));
          }
 
          // Set the JoinMode to OTAA
@@ -598,12 +600,12 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 
          if ((port < MessagePortMinimumValue) || (port > MessagePortMaximumValue))
          {
-            throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", "port");
+            throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", nameof(port));
          }
 
          if ((payload == null) || (payload.Length < MessageBcdMinimumLength) || (payload.Length > MessageBcdMaximumLength))
          {
-            throw new ArgumentException($"payload invalid length must be greater than or equal to  {MessageBcdMinimumLength} and less than or equal to {MessageBcdMaximumLength} BCD characters long", "payload");
+            throw new ArgumentException($"payload invalid length must be greater than or equal to  {MessageBcdMinimumLength} and less than or equal to {MessageBcdMaximumLength} BCD characters long", nameof(payload));
          }
 
          // TODO timeout validation
@@ -630,12 +632,12 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
 
          if ((port < MessagePortMinimumValue) || (port > MessagePortMaximumValue))
          {
-            throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", "port");
+            throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", nameof(port));
          }
 
          if ((payloadBytes == null) || (payloadBytes.Length < MessageBytesMinimumLength) || (payloadBytes.Length > MessageBytesMaximumLength))
          {
-            throw new ArgumentException($"payload invalid length must be greater than or equal to {MessageBytesMinimumLength} and less than or equal to {MessageBytesMaximumLength} bytes long", "payloadBytes");
+            throw new ArgumentException($"payload invalid length must be greater than or equal to {MessageBytesMinimumLength} and less than or equal to {MessageBytesMaximumLength} bytes long", nameof(payloadBytes));
          }
 
          string payloadBcd = Rak811LoRaWanDevice.BytesToBcd(payloadBytes);
@@ -660,16 +662,16 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
       {
          if ((expectedResponse == null) || (expectedResponse == string.Empty))
          {
-            throw new ArgumentException($"expectedResponse invalid length cannot be empty", "expectedResponse");
+            throw new ArgumentException($"expectedResponse invalid length cannot be empty", nameof( expectedResponse));
          }
          if ((command == null) || (command == string.Empty))
          {
-            throw new ArgumentException($"command invalid length cannot be empty", "command");
+            throw new ArgumentException($"command invalid length cannot be empty", nameof(command));
          }
 
          this.atCommandExpectedResponse = expectedResponse;
 
-         serialDevice.Write(command + EndOfLineMarker);
+         serialDevice.WriteLine(command);
 
          this.atExpectedEvent.Reset();
 
