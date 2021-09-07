@@ -31,7 +31,6 @@ namespace devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA
 
 		public static void Main()
 		{
-			SerialPort serialDevice=null;
 			string response;
 
 			Debug.WriteLine("devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA starting");
@@ -40,95 +39,94 @@ namespace devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA
 
 			try
 			{
-				serialDevice = new SerialPort(SerialPortId);
-
-				// set parameters
-				serialDevice.BaudRate = 9600;
-				serialDevice.DataBits = 8;
-				serialDevice.Parity = Parity.None;
-				serialDevice.StopBits = StopBits.One;
-				serialDevice.Handshake = Handshake.None;
-
-				serialDevice.ReadTimeout = 5000;
-
-				serialDevice.Open();
-
-				// clear out the RX buffer
-				response = serialDevice.ReadExisting();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-				Thread.Sleep(500);
-
-				// Set the Working mode to LoRaWAN
-				Console.WriteLine("Set Work mode");
-				serialDevice.Write("at+set_config=lora:work_mode:0\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadExisting();
-				Debug.WriteLine($"RX :{response} bytes:{response.Length}");
-
-				// Set the Region to AS923
-				Console.WriteLine("Set Region");
-				serialDevice.Write("at+set_config=lora:region:AS923\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-
-				// Set the JoinMode
-				Console.WriteLine("Set Join mode");
-				serialDevice.Write("at+set_config=lora:join_mode:0\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-
-				// Set the appEUI
-				Console.WriteLine("Set App Eui");
-				serialDevice.Write($"at+set_config=lora:app_eui:{AppEui}\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-
-				// Set the appKey
-				Console.WriteLine("Set App Key");
-				serialDevice.Write($"at+set_config=lora:app_key:{AppKey}\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-	
-				// Set the Confirm flag
-				Console.WriteLine("Set Confirm off");
-				serialDevice.Write("at+set_config=lora:confirm:0\r\n");
-				Thread.Sleep(500);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-				Thread.Sleep(500);
-
-				// Join the network
-				Console.WriteLine("Start Join");
-				serialDevice.Write("at+join\r\n");
-				Thread.Sleep(10000);
-				response = serialDevice.ReadLine();
-				Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
-
-				while (true)
+				using (SerialPort serialPort = new SerialPort(SerialPortId))
 				{
-					serialDevice.Write($"at+send=lora:{MessagePort}:{Payload}\r\n");
+					// set parameters
+					serialPort.BaudRate = 9600;
+					serialPort.DataBits = 8;
+					serialPort.Parity = Parity.None;
+					serialPort.StopBits = StopBits.One;
+					serialPort.Handshake = Handshake.None;
+
+					serialPort.ReadTimeout = 5000;
+
+					serialPort.NewLine = "\r\n";
+
+					serialPort.Open();
+
+					// clear out the RX buffer
+					response = serialPort.ReadExisting();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
 					Thread.Sleep(500);
-					//response = serialDevice.ReadExisting();
-					response = serialDevice.ReadLine();
+
+					// Set the Working mode to LoRaWAN
+					Console.WriteLine("Set Work mode");
+					serialPort.WriteLine("at+set_config=lora:work_mode:0");
+					Thread.Sleep(5000);
+					response = serialPort.ReadExisting();
+					response = response.Trim('\0');
 					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
 
-					Thread.Sleep(20000);
+					// Set the Region to AS923
+					Console.WriteLine("Set Region");
+					serialPort.WriteLine("at+set_config=lora:region:AS923");
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+					// Set the JoinMode
+					Console.WriteLine("Set Join mode");
+					serialPort.WriteLine("at+set_config=lora:join_mode:0");
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+					// Set the appEUI
+					Console.WriteLine("Set App Eui");
+					serialPort.WriteLine($"at+set_config=lora:app_eui:{AppEui}");
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+					// Set the appKey
+					Console.WriteLine("Set App Key");
+					serialPort.WriteLine($"at+set_config=lora:app_key:{AppKey}");
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+					// Set the Confirm flag
+					Console.WriteLine("Set Confirm off");
+					serialPort.WriteLine("at+set_config=lora:confirm:0");
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+					
+					// Join the network
+					Console.WriteLine("Start Join");
+					serialPort.WriteLine("at+join");
+					Thread.Sleep(10000);
+					response = serialPort.ReadLine();
+					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+					while (true)
+					{
+						Console.WriteLine("Sending");
+						serialPort.WriteLine($"at+send=lora:{MessagePort}:{Payload}");
+						Thread.Sleep(1000);
+
+						// The OK
+						Console.WriteLine("Send result");
+						response = serialPort.ReadLine();
+						Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+						// The Signal strength information etc.
+						Console.WriteLine("Network confirmation");
+						response = serialPort.ReadLine();
+						Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
+
+						Thread.Sleep(20000);
+					}
 				}
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-			}
-			finally
-			{
-				if ((serialDevice != null) && (serialDevice.IsOpen))
-				{
-					serialDevice.Close();
-				}
 			}
 		}
 	}
