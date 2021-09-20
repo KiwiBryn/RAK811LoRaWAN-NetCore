@@ -62,7 +62,6 @@ namespace devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA
 					// Set the Working mode to LoRaWAN
 					Console.WriteLine("Set Work mode");
 					serialPort.WriteLine("at+set_config=lora:work_mode:0");
-					Thread.Sleep(5000);
 					response = serialPort.ReadExisting();
 					response = response.Trim('\0');
 					Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
@@ -116,7 +115,7 @@ namespace devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA
 						Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
 
 						// The Signal strength information etc.
-						Console.WriteLine("Network confirmation");
+						Console.WriteLine("Signal strength");
 						response = serialPort.ReadLine();
 						Debug.WriteLine($"RX :{response.Trim()} bytes:{response.Length}");
 
