@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.NetCore.Rak811.NetworkJoinOTAA
+namespace devMobile.IoT.LoRaWAN.NetCore.Rak811
 {
 	using System;
 	using System.Diagnostics;
