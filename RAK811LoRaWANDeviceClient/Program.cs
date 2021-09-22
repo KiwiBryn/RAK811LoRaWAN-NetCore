@@ -1,4 +1,4 @@
-﻿ //---------------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------------
 // Copyright (c) Setpember 2021, devMobile Software
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,12 @@
 //  OTAA vs. ABP
 //  CONFIRMED
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
+namespace devMobile.IoT.LoRaWAN.NetCore.Rak811
 {
    using System;
    using System.IO.Ports;
    using System.Threading;
    using System.Diagnostics;
-
-	using devMobile.IoT.NetCore.Rak811.LoRaWan;
 
 	public class Program
    {
@@ -110,7 +108,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
 
 #if ABP
                Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} ABP");
-               result = device.AbpInitialise(DevAddress, NwksKey, AppsKey);
+               result = device.AbpInitialise(Config.DevAddress, Config.NwksKey, Config.AppsKey);
                if (result != Result.Success)
                {
                   Debug.WriteLine($"ABP Initialise failed {result}");
@@ -142,6 +140,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
                      Debug.WriteLine($"Send failed {result}");
                   }
 
+#if SLEEP
                   // if we sleep module too soon response is missed
                   Thread.Sleep(new TimeSpan(0, 0, 5));
 
@@ -152,9 +151,11 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
                      Debug.WriteLine($"Sleep failed {result}");
                      return;
                   }
+#endif
 
-                  Thread.Sleep(new TimeSpan(0, 5, 0));
+                  Thread.Sleep(new TimeSpan(0, 1, 0));
 
+#if SLEEP
                   Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} Wakeup");
                   result = device.Wakeup();
                   if (result != Result.Success)
@@ -165,6 +166,7 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
 
                   // if we send too soon after wakeup failure
                   Thread.Sleep(new TimeSpan(0, 0, 5));
+#endif
                }
             }
          }

@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.NetCore.Rak811.LoRaWanDeviceClient
+namespace devMobile.IoT.LoRaWAN.NetCore.Rak811
 {
    public class Config
    {

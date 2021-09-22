@@ -14,66 +14,13 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.NetCore.Rak811.LoRaWan
+namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 {
    using System;
    using System.Diagnostics;
    using System.IO.Ports;
    using System.Text;
    using System.Threading;
-
-   public enum LoRaClass
-   {
-      Undefined = 0,
-      A,
-      B,
-      C
-   }
-
-   public enum LoRaConfirmType
-   {
-      Undefined = 0,
-      Unconfirmed,
-      Confirmed,
-      Multicast,
-      Proprietary
-   }
-
-   public enum Result
-   {
-      Undefined = 0,
-      Success,
-      ResponseInvalid,
-      ATResponseTimeout,
-      ATCommandUnsuported,
-      ATCommandInvalidParameter,
-      ErrorReadingOrWritingFlash,
-      LoRaBusy,
-      LoRaServiceIsUnknown,
-      LoRaParameterInvalid,
-      LoRaFrequencyInvalid,
-      LoRaDataRateInvalid,
-      LoRaFrequencyAndDataRateInvalid,
-      LoRaDeviceNotJoinedNetwork,
-      LoRaPacketToLong,
-      LoRaServiceIsClosedByServer,
-      LoRaRegionUnsupported,
-      LoRaDutyCycleRestricted,
-      LoRaNoValidChannelFound,
-      LoRaNoFreeChannelFound,
-      StatusIsError,
-      LoRaTransmitTimeout,
-      LoRaRX1Timeout,
-      LoRaRX2Timeout,
-      LoRaRX1ReceiveError,
-      LoRaRX2ReceiveError,
-      LoRaJoinFailed,
-      LoRaDownlinkRepeated,
-      LoRaPayloadSizeNotValidForDataRate,
-      LoRaTooManyDownlinkFramesLost,
-      LoRaAddressFail,
-      LoRaMicVerifyError,
-   }
 
    public sealed class Rak811LoRaWanDevice : IDisposable
    {
@@ -115,6 +62,59 @@ namespace devMobile.IoT.NetCore.Rak811.LoRaWan
       public MessageConfirmationHandler OnMessageConfirmation;
       public delegate void ReceiveMessageHandler(int port, int rssi, int snr, string payload);
       public ReceiveMessageHandler OnReceiveMessage;
+
+      public enum LoRaClass
+      {
+         Undefined = 0,
+         A,
+         B,
+         C
+      }
+
+      public enum LoRaConfirmType
+      {
+         Undefined = 0,
+         Unconfirmed,
+         Confirmed,
+         Multicast,
+         Proprietary
+      }
+
+      public enum Result
+      {
+         Undefined = 0,
+         Success,
+         ResponseInvalid,
+         ATResponseTimeout,
+         ATCommandUnsuported,
+         ATCommandInvalidParameter,
+         ErrorReadingOrWritingFlash,
+         LoRaBusy,
+         LoRaServiceIsUnknown,
+         LoRaParameterInvalid,
+         LoRaFrequencyInvalid,
+         LoRaDataRateInvalid,
+         LoRaFrequencyAndDataRateInvalid,
+         LoRaDeviceNotJoinedNetwork,
+         LoRaPacketToLong,
+         LoRaServiceIsClosedByServer,
+         LoRaRegionUnsupported,
+         LoRaDutyCycleRestricted,
+         LoRaNoValidChannelFound,
+         LoRaNoFreeChannelFound,
+         StatusIsError,
+         LoRaTransmitTimeout,
+         LoRaRX1Timeout,
+         LoRaRX2Timeout,
+         LoRaRX1ReceiveError,
+         LoRaRX2ReceiveError,
+         LoRaJoinFailed,
+         LoRaDownlinkRepeated,
+         LoRaPayloadSizeNotValidForDataRate,
+         LoRaTooManyDownlinkFramesLost,
+         LoRaAddressFail,
+         LoRaMicVerifyError,
+      }
 
       public Rak811LoRaWanDevice()
       {
