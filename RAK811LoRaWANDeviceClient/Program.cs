@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//  PAYLOAD_BCD vs. PAYLOAD_BYTES
+//  PAYLOAD_HEX vs. PAYLOAD_BYTES
 //  OTAA vs. ABP
 //  CONFIRMED
 //  POWER_SAVE
@@ -36,8 +36,8 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		private static readonly TimeSpan MessageSendTimerPeriod = new TimeSpan(0, 5, 0);
 		private static Timer MessageSendTimer;
 		private const byte MessagePort = 1;
-#if PAYLOAD_BCD
-      private const string PayloadBcd = "48656c6c6f204c6f526157414e"; // Hello LoRaWAN in BCD
+#if PAYLOAD_HEX
+      private const string PayloadHex = "48656c6c6f204c6f526157414e"; // Hello LoRaWAN in HEX
 #endif
 #if PAYLOAD_BYTES
 		private static readonly byte[] PayloadBytes = { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x4c, 0x6f, 0x52, 0x61, 0x57, 0x41, 0x4e }; // Hello LoRaWAN in bytes
@@ -176,12 +176,12 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 			}
 #endif
 
-#if PAYLOAD_BCD
-			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} port:{MessagePort} payload BCD:{PayloadBcd}");
-			result = device.Send(MessagePort, PayloadBcd );
+#if PAYLOAD_HEX
+			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} port:{MessagePort} payload HEX:{PayloadHex}");
+			result = device.Send(MessagePort, PayloadHex, SendTimeoutmSec);
 #endif
 #if PAYLOAD_BYTES
-			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} port:{MessagePort} payload Bytes:{Rak811LoRaWanDevice.BytesToBcd(PayloadBytes)}");
+			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} port:{MessagePort} payload Bytes:{Rak811LoRaWanDevice.BytesToHex(PayloadBytes)}");
 			result = device.Send(MessagePort, PayloadBytes, SendTimeoutmSec);
 #endif
 			if (result != Result.Success)
@@ -207,11 +207,11 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		}
 #endif
 
-		static void OnReceiveMessageHandler(int port, int rssi, int snr, string payloadBcd)
+		static void OnReceiveMessageHandler(int port, int rssi, int snr, string payload)
 		{
-			byte[] payloadBytes = Rak811LoRaWanDevice.BcdToByes(payloadBcd);
+			byte[] payloadBytes = Rak811LoRaWanDevice.HexToByes(payload);
 
-			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} Receive Message RSSI:{rssi} SNR:{snr} Port:{port} Payload:{payloadBcd} PayLoadBytes:{BitConverter.ToString(payloadBytes)}");
+			Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} Receive Message RSSI:{rssi} SNR:{snr} Port:{port} Payload:{payload} PayLoadBytes:{BitConverter.ToString(payloadBytes)}");
 		}
 	}
 }
