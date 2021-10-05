@@ -97,7 +97,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 
 #if CONFIRMED
 					Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} Confirmed");
-					result = device.Confirm(LoRaConfirmType.Confirmed);
+					result = device.UplinkMessageConfirmationOn();
 					if (result != Result.Success)
 					{
 						Debug.WriteLine($"Confirm on failed {result}");
@@ -105,7 +105,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 					}
 #else
                Debug.WriteLine($"{DateTime.UtcNow:hh:mm:ss} Unconfirmed");
-               result = device.Confirm(LoRaConfirmType.Unconfirmed);
+					result = device.UplinkMessageConfirmationOff();
                if (result != Result.Success)
                {
                   Debug.WriteLine($"Confirm off failed {result}");
@@ -207,7 +207,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		}
 #endif
 
-		static void OnReceiveMessageHandler(int port, int rssi, int snr, string payload)
+		static void OnReceiveMessageHandler(byte port, int rssi, int snr, string payload)
 		{
 			byte[] payloadBytes = Rak811LoRaWanDevice.HexToByes(payload);
 
