@@ -23,11 +23,30 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 	using System.IO.Ports;
 	using System.Threading;
 
-	public enum LoRaClass
+	/// <summary>
+	/// The LoRaWAN device classes. From The Things Network definitions
+	/// </summary>
+	public enum LoRaWANDeviceClass
 	{
 		Undefined = 0,
+		/// <summary>
+		/// Class A devices support bi-directional communication between a device and a gateway. Uplink messages (from 
+		/// the device to the server) can be sent at any time. The device then opens two receive windows at specified 
+		/// times (RX1 Delay and RX2 Delay) after an uplink transmission. If the server does not respond in either of 
+		/// these receive windows, the next opportunity will be after the next uplink transmission from the device. 
 		A,
+		/// <summary>
+		/// Class B devices extend Class A by adding scheduled receive windows for downlink messages from the server. 
+		/// Using time-synchronized beacons transmitted by the gateway, the devices periodically open receive windows. 
+		/// The time between beacons is known as the beacon period, and the time during which the device is available 
+		/// to receive downlinks is a “ping slot.”
+		/// </summary>
 		B,
+		/// <summary>
+		/// Class C devices extend Class A by keeping the receive windows open unless they are transmitting, as shown 
+		/// in the figure below. This allows for low-latency communication but is many times more energy consuming than 
+		/// Class A devices.
+		/// </summary>
 		C
 	}
 
@@ -40,39 +59,136 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		Proprietary
 	}
 
+	/// <summary>
+	/// Possible results of library methods (combination of RAK3172 AT command and state machine errors)
+	/// </summary>
 	public enum Result
 	{
 		Undefined = 0,
+		/// <summary>
+		/// Command executed without error.
+		/// </summary>
 		Success,
+		/// <summary>
+		/// The BLE works in an invalid state, so that it can’t be operated.
+		/// </summary>
 		ResponseInvalid,
-		ATResponseTimeout,
+		/// <summary>
+		/// Command failed to complete in configured duration.
+		/// </summary>
+		Timeout,
+		/// <summary>
+		/// The last command received is an unsupported AT command.
+		/// </summary>
 		ATCommandUnsuported,
+		/// <summary>
+		/// Invalid parameter in the AT command.
+		/// </summary>
 		ATCommandInvalidParameter,
+		/// <summary>
+		/// There is an error when reading or writing the flash memory.
+		/// </summary>
 		ErrorReadingOrWritingFlash,
+		/// <summary>
+		/// The LoRa transceiver is busy, could not process a new command.
+		/// </summary>
 		LoRaBusy,
+		/// <summary>
+		/// LoRa service is unknown. Unknown MAC command received by node. Execute commands that are not supported in the current state,
+		/// </summary>
 		LoRaServiceIsUnknown,
+		/// <summary>
+		/// The LoRa parameters are invalid.
+		/// </summary>
 		LoRaParameterInvalid,
+		/// <summary>
+		/// The LoRa frequency parameters are invalid.
+		/// </summary>
 		LoRaFrequencyInvalid,
+		/// <summary>
+		/// The LoRa data rate (DR) is invalid.
+		/// </summary>
 		LoRaDataRateInvalid,
+		/// <summary>
+		/// The LoRa frequency and data rate are invalid.
+		/// </summary>
 		LoRaFrequencyAndDataRateInvalid,
+		/// <summary>
+		/// The device has not joined into a LoRa network.
+		/// </summary>
 		LoRaDeviceNotJoinedNetwork,
+		/// <summary>
+		/// The length of the packet exceeded that maximum allowed by the LoRa protocol.
+		/// </summary>
 		LoRaPacketToLong,
+		/// <summary>
+		/// Service is closed by the server. Due to the limitation of duty cycle, the server will 
+		/// send "SRV_MAC_DUTY_CYCLE_REQ" MAC command to close the service.
+		/// </summary>
 		LoRaServiceIsClosedByServer,
+		/// <summary>
+		/// This is an unsupported region code.
+		/// </summary>
 		LoRaRegionUnsupported,
+		/// <summary>
+		/// Duty cycle is restricted. Due to duty cycle, data cannot be sent at this time until the time limit is removed.
+		/// </summary>
 		LoRaDutyCycleRestricted,
+		/// <summary>
+		/// No valid LoRa channel could be found.
+		/// </summary>
 		LoRaNoValidChannelFound,
+		/// <summary>
+		/// No available LoRa channel could be found.
+		/// </summary>
 		LoRaNoFreeChannelFound,
+		/// <summary>
+		/// Status is error. Generally, the internal state of the protocol stack is wrong.
+		/// </summary>
 		StatusIsError,
+		/// <summary>
+		/// Time out reached while sending the packet through the LoRa transceiver.
+		/// </summary>
 		LoRaTransmitTimeout,
+		/// <summary>
+		/// Time out reached while waiting for a packet in the LoRa RX1 window.
+		/// </summary>
 		LoRaRX1Timeout,
+		/// <summary>
+		/// Time out reached while waiting for a packet in the LoRa RX2 window.
+		/// </summary>
 		LoRaRX2Timeout,
+		/// <summary>
+		/// There is an error while receiving a packet during the LoRa RX1 window.
+		/// </summary>
 		LoRaRX1ReceiveError,
+		/// <summary>
+		/// There is an error while receiving a packet during the LoRa RX2 window.
+		/// </summary>
 		LoRaRX2ReceiveError,
+		/// <summary>
+		/// Failed to join into a LoRa network.
+		/// </summary>
 		LoRaJoinFailed,
+		/// <summary>
+		/// Duplicated down-link message detected. A message with an invalid down-link count was received.
+		/// </summary>
 		LoRaDownlinkRepeated,
+		/// <summary>
+		///  Payload size is not valid for the current data rate (DR).
+		/// </summary>
 		LoRaPayloadSizeNotValidForDataRate,
+		/// <summary>
+		/// There many down-link packets were lost.
+		/// </summary>
 		LoRaTooManyDownlinkFramesLost,
+		/// <summary>
+		///  Address fail. The address of the received packet does not match the address of the current node.
+		/// </summary>
 		LoRaAddressFail,
+		/// <summary>
+		/// Invalid MIC was detected in the LoRa message.
+		/// </summary>
 		LoRaMicVerifyError,
 	}
 
@@ -146,29 +262,29 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 			return Result.Success;
 		}
 
-		public Result Class(LoRaClass loRaClass)
+		public Result Class(LoRaWANDeviceClass deviceClass)
 		{
 			string command;
 
-			switch (loRaClass)
+			switch (deviceClass)
 			{
-				case LoRaClass.A:
+				case LoRaWANDeviceClass.A:
 					command = "at+set_config=lora:class:0";
 					break;
 				// Currently ClassB unsupported
-				//case LoRaClass.B;
+				//case LoRaWANDeviceClass.B;
 				//   command = "at+set_config=lora:class:1";
 				//   break;
-				case LoRaClass.C:
+				case LoRaWANDeviceClass.C:
 					command = "at+set_config=lora:class:2";
 					break;
 				default:
-					throw new ArgumentException($"LoRa class value {loRaClass} invalid", nameof(loRaClass));
+					throw new ArgumentException($"LoRa class value {deviceClass} invalid", nameof(deviceClass));
 			}
 
 			// Set the class
 #if DIAGNOSTICS
-			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} lora:class:{loRaClass}");
+			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} lora:class:{deviceClass}");
 #endif
 			Result result = SendCommand(command);
 			if (result != Result.Success)
@@ -691,7 +807,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 
 			if (!this.atExpectedEvent.WaitOne(timeoutmSec, false))
 			{
-				return Result.ATResponseTimeout;
+				return Result.Timeout;
 			}
 
 			return result;
@@ -866,7 +982,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 				}
 				catch (TimeoutException)
 				{
-					result = Result.ATResponseTimeout;
+					result = Result.Timeout;
 				}
 
 				atExpectedEvent.Set();

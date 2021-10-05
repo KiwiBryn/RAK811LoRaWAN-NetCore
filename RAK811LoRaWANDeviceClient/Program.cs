@@ -28,7 +28,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 	public class Program
 	{
 		private const string SerialPortId = "/dev/ttyS0";
-		private const LoRaClass Class = LoRaClass.A;
+		private const LoRaWANDeviceClass Class = LoRaWANDeviceClass.A;
 		private const string Region = "AS923";
 		private const int JoinTimeoutmSec = 25000;
 		private const int SendTimeoutmSec = 10000;
