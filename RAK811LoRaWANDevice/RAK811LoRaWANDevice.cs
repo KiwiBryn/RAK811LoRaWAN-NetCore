@@ -17,9 +17,10 @@
 namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 {
 	using System;
+#if DIAGNOSTICS
 	using System.Diagnostics;
+#endif
 	using System.IO.Ports;
-	using System.Text;
 	using System.Threading;
 
 	public enum LoRaClass
@@ -77,8 +78,6 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 
 	public sealed class Rak811LoRaWanDevice : IDisposable
 	{
-		public const ushort BaudRateMinimum = 600;
-		public const ushort BaudRateMaximum = 57600;
 		public const ushort RegionIDLength = 5;
 		public const ushort DevEuiLength = 16;
 		public const ushort AppEuiLength = 16;
@@ -88,17 +87,12 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		public const ushort AppsKeyLength = 32;
 		public const ushort MessagePortMinimumValue = 1;
 		public const ushort MessagePortMaximumValue = 223;
-		public const ushort MessageBytesMinimumLength = 1;
-		public const ushort MessageBytesMaximumLength = 242;
-		public const ushort MessageBcdMinimumLength = 1;
-		public const ushort MessageBcdMaximumLength = 484;
-
-		private const string EndOfLineMarker = "\r\n";
 
 		private SerialPort serialDevice = null;
 		private Thread CommandResponsesProcessorThread = null;
 		private Boolean CommandProcessResponses = true;
-		private const int CommandTimeoutDefaultmSec = 10000;
+		private const int CommandTimeoutDefaultmSec = 1500;
+		private const int ReceiveTimeoutDefaultmSec = 10000;
 		private readonly AutoResetEvent atExpectedEvent;
 		private Result result;
 
@@ -114,18 +108,8 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 			this.atExpectedEvent = new AutoResetEvent(false);
 		}
 
-		public Result Initialise(string serialPortId, int baudRate, Parity serialParity, ushort dataBits, StopBits stopBits)
+		public Result Initialise(string serialPortId, int baudRate, Parity serialParity = Parity.None, ushort dataBits = 8, StopBits stopBits = StopBits.One)
 		{
-			Result result;
-			if ((serialPortId == null) || (serialPortId == ""))
-			{
-				throw new ArgumentException("Invalid SerialPortId", nameof(serialPortId));
-			}
-			if ((baudRate < BaudRateMinimum) || (baudRate > BaudRateMaximum))
-			{
-				throw new ArgumentException("Invalid BaudRate", nameof(baudRate));
-			}
-
 			serialDevice = new SerialPort(serialPortId);
 
 			// set parameters
@@ -136,6 +120,8 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 			serialDevice.Handshake = Handshake.None;
 
 			serialDevice.NewLine = "\r\n";
+
+			serialDevice.ReadTimeout = ReceiveTimeoutDefaultmSec;
 
 			serialDevice.Open();
 			serialDevice.ReadExisting();
@@ -148,7 +134,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 #if DIAGNOSTICS
 			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} lora:work_mode LoRaWAN");
 #endif
-			result = SendCommand("at+set_config=lora:work_mode:0");
+			Result result = SendCommand("at+set_config=lora:work_mode:0");
 			if (result != Result.Success)
 			{
 #if DIAGNOSTICS
@@ -337,15 +323,32 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		{
 			Result result;
 
-			if ((devAddr == null) || (devAddr.Length != DevAddrLength))
+			if (devAddr == null)
+			{
+				throw new ArgumentNullException(nameof(devAddr));
+			}
+
+			if (devAddr.Length != DevAddrLength)
 			{
 				throw new ArgumentException($"devAddr invalid length must be {DevAddrLength} characters", nameof(devAddr));
 			}
-			if ((nwksKey == null) || (nwksKey.Length != NwsKeyLength))
+
+			if (nwksKey == null)
 			{
-				throw new ArgumentException($"nwsKey invalid length must be {NwsKeyLength} characters", nameof(nwksKey));
+				throw new ArgumentNullException(nameof(nwksKey));
 			}
-			if ((appsKey == null) || (appsKey.Length != AppsKeyLength))
+
+			if (nwksKey.Length != NwsKeyLength)
+			{
+				throw new ArgumentException($"nwksKey invalid length must be {NwsKeyLength} characters", nameof(nwksKey));
+			}
+
+			if (appsKey == null)
+			{
+				throw new ArgumentNullException(nameof(appsKey));
+			}
+
+			if (appsKey.Length != AppsKeyLength)
 			{
 				throw new ArgumentException($"appsKey invalid length must be {AppsKeyLength} characters", nameof(appsKey));
 			}
@@ -409,11 +412,22 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		{
 			Result result;
 
-			if ((appEui == null) || (appEui.Length != AppEuiLength))
+			if (appEui == null)
+			{
+				throw new ArgumentNullException(nameof(appEui));
+			}
+
+			if (appEui.Length != AppEuiLength)
 			{
 				throw new ArgumentException($"appEui invalid length must be {AppEuiLength} characters", nameof(appEui));
 			}
-			if ((appKey == null) || (appKey.Length != AppKeyLength))
+
+			if (appKey == null)
+			{
+				throw new ArgumentNullException(nameof(appKey));
+			}
+
+			if (appKey.Length != AppKeyLength)
 			{
 				throw new ArgumentException($"appKey invalid length must be {AppKeyLength} characters", nameof(appKey));
 			}
@@ -524,7 +538,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 #if DIAGNOSTICS
 			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} join");
 #endif
-			result = SendCommand($"at+join");
+			result = SendCommand($"at+join", timeoutmSec);
 			if (result != Result.Success)
 			{
 #if DIAGNOSTICS
@@ -601,12 +615,15 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 				throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", nameof(port));
 			}
 
-			if ((payload == null) || (payload.Length < MessageBcdMinimumLength) || (payload.Length > MessageBcdMaximumLength))
+			if (payload == null)
 			{
-				throw new ArgumentException($"payload invalid length must be greater than or equal to  {MessageBcdMinimumLength} and less than or equal to {MessageBcdMaximumLength} BCD characters long", nameof(payload));
+				throw new ArgumentNullException(nameof(payload));
 			}
 
-			// TODO timeout validation
+			if ((payload.Length % 2) != 0)
+			{
+				throw new ArgumentException("Payload length invalid must be a multiple of 2", nameof(payload));
+			}
 
 			// Send message the network
 #if DIAGNOSTICS
@@ -624,7 +641,7 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 			return Result.Success;
 		}
 
-		public Result Send(ushort port, byte[] payloadBytes, int timeoutmSec)
+		public Result Send(ushort port, byte[] payload, int timeoutmSec)
 		{
 			Result result;
 
@@ -633,18 +650,18 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 				throw new ArgumentException($"port invalid must be greater than or equal to {MessagePortMinimumValue} and less than or equal to {MessagePortMaximumValue}", nameof(port));
 			}
 
-			if ((payloadBytes == null) || (payloadBytes.Length < MessageBytesMinimumLength) || (payloadBytes.Length > MessageBytesMaximumLength))
+			if (payload == null)
 			{
-				throw new ArgumentException($"payload invalid length must be greater than or equal to {MessageBytesMinimumLength} and less than or equal to {MessageBytesMaximumLength} bytes long", nameof(payloadBytes));
+				throw new ArgumentNullException(nameof(payload));
 			}
 
-			string payloadBcd = Rak811LoRaWanDevice.BytesToBcd(payloadBytes);
+			string payloadHex = Rak811LoRaWanDevice.BytesToHex(payload);
 
 			// Send message the network
 #if DIAGNOSTICS
-			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} Send port:{port} payload:{payloadBcd} timeout:{timeoutmSec} mSec");
+			Debug.WriteLine($" {DateTime.UtcNow:hh:mm:ss} Send port:{port} payload:{payloadHex} timeout:{timeoutmSec} mSec");
 #endif
-			result = SendCommand($"at+send=lora:{port}:{payloadBcd}");
+			result = SendCommand($"at+send=lora:{port}:{payloadHex}");
 			if (result != Result.Success)
 			{
 #if DIAGNOSTICS
@@ -857,26 +874,44 @@ namespace devMobile.IoT.LoRaWAN.NetCore.RAK811
 		}
 
 		// Utility functions for clients for processing messages payloads to be send, ands messages payloads received.
-		public static string BytesToBcd(byte[] payloadBytes)
+		/// <summary>
+		/// Converts an array of byes to a hexadecimal string.
+		/// </summary>
+		/// <param name="payloadBytes"></param>
+		/// <exception cref="ArgumentNullException">The array of bytes is null.</exception>
+		/// <returns>String containing hex encoded bytes</returns>
+		public static string BytesToHex(byte[] payloadBytes)
 		{
-			Debug.Assert(payloadBytes != null);
-			Debug.Assert(payloadBytes.Length > 0);
+			if (payloadBytes == null)
+			{
+				throw new ArgumentNullException(nameof(payloadBytes));
+			}
 
-			StringBuilder payloadBcd = new StringBuilder(BitConverter.ToString(payloadBytes));
-
-			payloadBcd = payloadBcd.Replace("-", "");
-
-			return payloadBcd.ToString();
+			return BitConverter.ToString(payloadBytes).Replace("-", "");
 		}
 
-		public static byte[] BcdToByes(string payloadBcd)
+		/// <summary>
+		/// Converts a hexadecimal string to an array of bytes.
+		/// </summary>
+		/// <param name="payload">array of bytes encoded as hex</param>
+		/// <exception cref="ArgumentNullException">The Hexadecimal string is null.</exception>
+		/// <exception cref="ArgumentException">The Hexadecimal string is not at even number of characters.</exception>
+		/// <exception cref="System.FormatException">The Hexadecimal string contains some invalid characters.</exception>
+		/// <returns>Array of bytes parsed from Hexadecimal string.</returns>
+		public static byte[] HexToByes(string payload)
 		{
-			Debug.Assert(payloadBcd != null);
-			Debug.Assert(payloadBcd != String.Empty);
-			Debug.Assert(payloadBcd.Length % 2 == 0);
-			Byte[] payloadBytes = new byte[payloadBcd.Length / 2];
+			if (payload == null)
+			{
+				throw new ArgumentNullException(nameof(payload));
+			}
+			if (payload.Length % 2 != 0)
+			{
+				throw new ArgumentException($"Payload invalid length must be an even number", nameof(payload));
+			}
 
-			char[] chars = payloadBcd.ToCharArray();
+			Byte[] payloadBytes = new byte[payload.Length / 2];
+
+			char[] chars = payload.ToCharArray();
 
 			for (int index = 0; index < payloadBytes.Length; index++)
 			{
