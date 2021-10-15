@@ -3,6 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>devMobile.IoT.NetCore.Rak811.LoRaWan</RootNamespace>
+    <Version>1.0.1</Version>
+    <Authors>Bryn Lewis @KiwiBryn</Authors>
+    <Company>devMobile Software</Company>
+    <Product>RAK811 LoRaWAN library</Product>
+    <Description>Library for RAK811 LoRaWAN module which supports sending &amp; receiving messages, power conservation modes, Adaptive Data Rates(ADR), Activation By Personalisation(ABP), and Over the Air Activation(OTAA).</Description>
+    <Copyright>devMobile Software, Apache License, Version 2.0</Copyright>
+    <PackageProjectUrl>https://blog.devmobile.co.nz</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KiwiBryn/RAK811LoRaWAN-NetCore</RepositoryUrl>
+    <PackageTags>LoRaWAN,RAK811,RAKWireless,dotnetcore, .net, .net-core,dot-net-core</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
