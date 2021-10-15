@@ -5,6 +5,7 @@ This repo has the source code for the series of blog posts written as I ported m
 
 01. [Basic connectivity](http://blog.devmobile.co.nz/2021/09/04/net-core-rak811-lorawan-library-part1/)
 02. [Nasty OTAA connect](http://blog.devmobile.co.nz/2021/09/05/net-core-rak811-lorawan-library-part2/)
+03. [The massive refactor](http://blog.devmobile.co.nz/2021/10/06/net-core-rak811-lorawan-library-part3/)
 
 I used a [PI Supply IoT LoRa Node pHAT for Raspberry Pi](https://uk.pi-supply.com/products/iot-lora-node-phat-for-raspberry-pi) for development
 
